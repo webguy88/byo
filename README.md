@@ -20,4 +20,6 @@ To run on Windows just download it and double click it, but for Linux run the fo
   $ cd byo
   $ ./bombgame
 ```
+Else, just download the Linux file and run it as usual.
+
 So, have fun! :)
