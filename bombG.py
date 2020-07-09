@@ -17,6 +17,10 @@ FULLSCREEN = False
 window = pyglet.window.Window(SCREENW, SCREENH, caption="Bomb Your Opponents",
                               fullscreen=FULLSCREEN)
 
+icon16 = resource.image('icon16.png')
+icon32 = resource.image('icon32.png')
+window.set_icon(icon16, icon32)
+
 default_cur = window.get_system_mouse_cursor(window.CURSOR_DEFAULT)
 choose_cur = window.get_system_mouse_cursor(window.CURSOR_HAND)
 
