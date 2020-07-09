@@ -19,8 +19,6 @@ window = pyglet.window.Window(SCREENW, SCREENH, caption="Bomb Your Opponents",
 
 default_cur = window.get_system_mouse_cursor(window.CURSOR_DEFAULT)
 choose_cur = window.get_system_mouse_cursor(window.CURSOR_HAND)
-denial_cur = window.get_system_mouse_cursor(window.CURSOR_NO)
-
 
 def center_image(image):
     image.anchor_x = image.width // 2
@@ -39,16 +37,22 @@ main_BG = resource.image('mainBG.png')
 game_logo = resource.image('logo.png')
 start_unselected = resource.image('startUnselected.png')
 start_selected = resource.image('startSelected.png')
+info = resource.image('info.png')
+go_back = resource.image('credits_back.png')
+page_left = resource.image('pageL.png')
+page_right = resource.image('pageR.png')
+
+# Anchoring certain images
 center_image(bomb)
 center_image(game_logo)
 center_image(start_unselected)
 center_image(start_selected)
 
-# Allow transparency
+# Allow transparency for blits
 gl.glEnable(gl.GL_BLEND)
 gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
-# Animations (to be implemented)
+# Animations
 explosion_frames = [
     resource.image('explosion1.png'),
     resource.image('explosion2.png'),
@@ -114,6 +118,7 @@ class MainMenu(Screen):
     bg = sprite.Sprite(main_BG, x=0, y=0)
     selected = sprite.Sprite(start_selected, x=400, y=200)
     unselected = sprite.Sprite(start_unselected, x=selected.x, y=selected.y)
+    info_button = sprite.Sprite(info, x=5, y=5)
 
     def __init__(self):
         self.mouse_overButton = False
@@ -135,12 +140,14 @@ class MainMenu(Screen):
 
         # Regions
         self.start = Region(250, 150, 300, 100)
+        self.information = Region(5, 5, 71, 64)
 
     def draw(self):
         self.bg.draw()
         self.logo.draw()
         self.copyrights.draw()
         self.version.draw()
+        self.info_button.draw()
 
         if self.mouse_overButton:
             self.selected.draw()
@@ -150,6 +157,9 @@ class MainMenu(Screen):
     def on_click(self, x, y, button):
         if self.start.contain(x, y):
             engine.setCurrentScreen(game)
+        
+        elif self.information.contain(x, y):
+            engine.setCurrentScreen(credit)
 
     def update(self, dt):
         if self.start.contain(engine.mouse_x, engine.mouse_y):
@@ -157,6 +167,102 @@ class MainMenu(Screen):
             window.set_mouse_cursor(choose_cur)
         else:
             self.mouse_overButton = False
+
+        if self.information.contain(engine.mouse_x, engine.mouse_y):
+            window.set_mouse_cursor(choose_cur)
+
+
+class Credit(Screen):
+
+    credits_back = sprite.Sprite(go_back, x=10, y=500)
+    pageL = sprite.Sprite(page_left, x=350, y=5)
+    pageR = sprite.Sprite(page_right, x=420, y=5)
+    gameplay = resource.image('gameplay.png')
+
+    def __init__(self):
+        self.page = 1
+        self.back = Region(10, 500, 135, 86)
+        self.goRight = Region(420, 5, 64, 64)
+        self.goLeft = Region(350, 5, 64, 64)
+
+        # Text
+        self.license = pyglet.text.Label(
+            """
+            Copyright (c) 2006-2008 Alex Holkner
+    Copyright (c) 2008-2020 pyglet contributors
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+        * Redistributions of source code must retain the above copyright
+            notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright
+            notice, this list of conditions and the following disclaimer in
+            the documentation and/or other materials provided with the
+            distribution.
+        * Neither the name of pyglet nor the names of its
+            contributors may be used to endorse or promote products
+            derived from this software without specific prior written
+            permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+            """,
+            x=550, y=230, anchor_x='center', anchor_y='center', font_size=10,
+            bold=True, color=(0, 0, 0, 255),
+            multiline=True, width=800, height=600
+        )
+
+        self.license_header = pyglet.text.Label("License", x=400, y=550,
+                                                anchor_x='center', anchor_y='center',
+                                                font_size=24, bold=True, color=(0, 0, 0, 255))
+
+    def draw(self):
+
+        if self.page == 1:
+            main_menu.bg.draw()
+            self.license_header.draw()
+            self.pageR.draw()
+            self.license.draw()
+        
+        if self.page == 2:
+            self.gameplay.blit(0, 0)
+            self.pageL.draw()
+
+        self.credits_back.draw()
+
+    def on_click(self, x, y, button):
+        if self.back.contain(x, y):
+            engine.setCurrentScreen(main_menu)
+
+        # Go to page 2
+        if self.page == 1 and self.goRight.contain(x, y):
+            self.page = 2
+        
+        # Go to page 1
+        elif self.page == 2 and self.goLeft.contain(x, y):
+            self.page = 1
+
+    def update(self, dt):
+        if self.back.contain(engine.mouse_x, engine.mouse_y):
+            window.set_mouse_cursor(choose_cur)
+
+        if self.page == 1 and self.goRight.contain(engine.mouse_x, engine.mouse_y):
+            window.set_mouse_cursor(choose_cur)
+
+        elif self.page == 2 and self.goLeft.contain(engine.mouse_x, engine.mouse_y):
+            window.set_mouse_cursor(choose_cur)
 
 
 class Game(Screen):
@@ -516,6 +622,7 @@ class Region(object):
 
 # Class instances
 main_menu = MainMenu()
+credit = Credit()
 game = Game()
 engine = Engine(main_menu)
 
