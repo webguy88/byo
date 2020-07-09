@@ -272,6 +272,14 @@ class Game(Screen):
     player1 = sprite.Sprite(ship1, x=83, y=130)
     player2 = sprite.Sprite(ship2, x=593, y=250)
     explosion_animation = pyglet.image.Animation.from_image_sequence(explosion_frames, duration=0.1, loop=True)
+    explosion_sound = resource.media('explode.wav', streaming=False)
+    bomb_flying = resource.media('bombfly.wav', streaming=False)
+    
+    # Media player stuff
+    exp_player = pyglet.media.Player()
+    exp_player.queue(explosion_sound)
+    bmbf = pyglet.media.Player()
+    bmbf.queue(bomb_flying)
 
     def __init__(self):
         # Firing system
@@ -283,6 +291,7 @@ class Game(Screen):
         self.explosion_y = -10
 
         # Rest of instances
+        self.audio_player = None
         self.explosion = sprite.Sprite(self.explosion_animation, x=self.explosion_x, y=self.explosion_y)
         self.bombSpr = sprite.Sprite(bomb, x=self.bomb_x, y=self.bomb_y)
         self.p1 = main_menu.p1
@@ -344,6 +353,25 @@ class Game(Screen):
 
         # Debugging goes here
         ...
+
+    def play_explosion(self):
+        self.audio_player = pyglet.media.Player()
+        self.audio_player.queue(self.explosion_sound)
+        self.audio_player.play()
+        pass
+
+    def play_fly(self):
+        self.audio_player = pyglet.media.Player()
+        self.audio_player.queue(self.bomb_flying)
+        self.audio_player.play()
+        pass
+
+    def pause_explosion(self):
+        self.audio_player.pause()
+        pass
+
+    def pause_fly(self):
+        self.audio_player.pause()
 
     def select_player(self):
         if self.choose == 0:
@@ -436,12 +464,14 @@ class Game(Screen):
         if self.p2_hitbox.contain(x, y) and self.turn == 1 \
            and self.player_hit == 0:
             self.fired = True
+            self.play_fly()
             self.who_firedBomb = 1
 
         # Player 2
         if self.p1_hitbox.contain(x, y) and self.turn == 2 \
            and self.player_hit == 0:
             self.fired = True
+            self.play_fly()
             self.who_firedBomb = 2
 
     def update(self, dt):
@@ -480,6 +510,8 @@ class Game(Screen):
             print(self.turn, self.choose)
             self.player_hit = 1
             self.fired = False
+            self.pause_fly()
+            self.play_explosion()
             clock.schedule_once(stop_explosion, 1)
 
             # Remove HP and give next turn
@@ -497,6 +529,8 @@ class Game(Screen):
             print(self.turn, self.choose)
             self.player_hit = 2
             self.fired = False
+            self.pause_explosion()
+            self.play_explosion()
             clock.schedule_once(stop_explosion, 1)
             
             # Remove HP and give next turn
@@ -543,10 +577,15 @@ class Game(Screen):
 class WinnerScreen(Screen):
 
     prize = sprite.Sprite(trophy, x=0, y=0)
+    victory_sound = resource.media('victory.wav', streaming=False)
+
+    victory_player = pyglet.media.Player()
+    victory_player.queue(victory_sound)
 
     def __init__(self, winner):
         self.winner = winner
         self.leave = Region(0, 0, SCREENW, SCREENH)
+        self.victory_player.play()
 
         self.winner_text = pyglet.text.Label(f"Congratulations, {self.winner}! You have won!",
                                              x=400, y=300, anchor_x='center', anchor_y='center',
@@ -624,7 +663,7 @@ class Region(object):
 main_menu = MainMenu()
 credit = Credit()
 game = Game()
-engine = Engine(main_menu)
+engine = Engine(game)
 
 
 # Window events
