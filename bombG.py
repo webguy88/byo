@@ -667,7 +667,7 @@ class Region(object):
 main_menu = MainMenu()
 credit = Credit()
 game = Game()
-engine = Engine(game)
+engine = Engine(main_menu)
 
 
 # Window events
