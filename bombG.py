@@ -5,7 +5,6 @@ from pyglet import resource
 from pyglet import sprite
 from pyglet import clock
 from random import randint
-from time import sleep
 
 resource.path = ['./resources/']
 resource.reindex()
@@ -136,7 +135,7 @@ class MainMenu(Screen):
                                             color=(0, 0, 0, 255),
                                             bold=True)
 
-        self.version = pyglet.text.Label("v 1.0",
+        self.version = pyglet.text.Label("v 1.1",
                                          x=768, y=40, anchor_x='center',
                                          anchor_y='center', font_size=16,
                                          color=(0, 0, 0, 255),
@@ -466,14 +465,14 @@ class Game(Screen):
 
         # Player 1
         if self.p2_hitbox.contain(x, y) and self.turn == 1 \
-           and self.player_hit == 0:
+           and self.player_hit == 0 and not self.fired:
             self.fired = True
             self.play_fly()
             self.who_firedBomb = 1
 
         # Player 2
         if self.p1_hitbox.contain(x, y) and self.turn == 2 \
-           and self.player_hit == 0:
+           and self.player_hit == 0 and not self.fired:
             self.fired = True
             self.play_fly()
             self.who_firedBomb = 2
@@ -510,8 +509,6 @@ class Game(Screen):
         # Bomb hits player 1
         if self.p1_hitbox.contain(self.bombSpr.x, self.bombSpr.y) \
            and self.turn == 2:
-            print("Impact")
-            print(self.turn, self.choose)
             self.player_hit = 1
             self.fired = False
             self.pause_fly()
@@ -529,8 +526,6 @@ class Game(Screen):
         # Bomb hits player 2
         if self.p2_hitbox.contain(self.bombSpr.x, self.bombSpr.y) \
            and self.turn == 1:
-            print("Impact")
-            print(self.turn, self.choose)
             self.player_hit = 2
             self.fired = False
             self.pause_explosion()
