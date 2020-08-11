@@ -23,6 +23,7 @@ window.set_icon(icon16, icon32)
 default_cur = window.get_system_mouse_cursor(window.CURSOR_DEFAULT)
 choose_cur = window.get_system_mouse_cursor(window.CURSOR_HAND)
 
+
 def center_image(image):
     image.anchor_x = image.width // 2
     image.anchor_y = image.height // 2
@@ -94,9 +95,9 @@ class Engine():
         self.currentScreen.draw()
 
     def update(self, dt):
-        window.set_mouse_cursor(default_cur)  # Always update the cursor to be default
+        window.set_mouse_cursor(default_cur)
         self.currentScreen.update(dt)
-    
+
     def setCurrentScreen(self, currentScreen):
         self.currentScreen = currentScreen
 
@@ -160,7 +161,7 @@ class MainMenu(Screen):
     def on_click(self, x, y, button):
         if self.start.contain(x, y):
             engine.setCurrentScreen(game)
-        
+
         elif self.information.contain(x, y):
             engine.setCurrentScreen(credit)
 
@@ -228,8 +229,10 @@ class Credit(Screen):
         )
 
         self.license_header = pyglet.text.Label("License", x=400, y=550,
-                                                anchor_x='center', anchor_y='center',
-                                                font_size=24, bold=True, color=(0, 0, 0, 255))
+                                                anchor_x='center',
+                                                anchor_y='center',
+                                                font_size=24, bold=True,
+                                                color=(0, 0, 0, 255))
 
     def draw(self):
 
@@ -238,7 +241,7 @@ class Credit(Screen):
             self.license_header.draw()
             self.pageR.draw()
             self.license.draw()
-        
+
         if self.page == 2:
             self.gameplay.blit(0, 0)
             self.pageL.draw()
@@ -252,7 +255,7 @@ class Credit(Screen):
         # Go to page 2
         if self.page == 1 and self.goRight.contain(x, y):
             self.page = 2
-        
+
         # Go to page 1
         elif self.page == 2 and self.goLeft.contain(x, y):
             self.page = 1
@@ -261,10 +264,12 @@ class Credit(Screen):
         if self.back.contain(engine.mouse_x, engine.mouse_y):
             window.set_mouse_cursor(choose_cur)
 
-        if self.page == 1 and self.goRight.contain(engine.mouse_x, engine.mouse_y):
+        if self.page == 1 and self.goRight.contain(engine.mouse_x,
+                                                   engine.mouse_y):
             window.set_mouse_cursor(choose_cur)
 
-        elif self.page == 2 and self.goLeft.contain(engine.mouse_x, engine.mouse_y):
+        elif self.page == 2 and self.goLeft.contain(engine.mouse_x,
+                                                    engine.mouse_y):
             window.set_mouse_cursor(choose_cur)
 
 
@@ -274,10 +279,11 @@ class Game(Screen):
     bg = sprite.Sprite(game_BG, x=0, y=0)
     player1 = sprite.Sprite(ship1, x=83, y=130)
     player2 = sprite.Sprite(ship2, x=593, y=250)
-    explosion_animation = pyglet.image.Animation.from_image_sequence(explosion_frames, duration=0.1, loop=True)
+    explosion_animation = pyglet.image.Animation.from_image_sequence(
+        explosion_frames, duration=0.1, loop=True)
     explosion_sound = resource.media('explode.wav', streaming=False)
     bomb_flying = resource.media('bombfly.wav', streaming=False)
-    
+
     # Media player stuff
     exp_player = pyglet.media.Player()
     exp_player.queue(explosion_sound)
@@ -295,7 +301,9 @@ class Game(Screen):
 
         # Rest of instances
         self.audio_player = None
-        self.explosion = sprite.Sprite(self.explosion_animation, x=self.explosion_x, y=self.explosion_y)
+        self.explosion = sprite.Sprite(self.explosion_animation,
+                                       x=self.explosion_x,
+                                       y=self.explosion_y)
         self.bombSpr = sprite.Sprite(bomb, x=self.bomb_x, y=self.bomb_y)
         self.p1 = main_menu.p1
         self.p2 = main_menu.p2
@@ -309,34 +317,48 @@ class Game(Screen):
         # Text
 
         self.p1name = pyglet.text.Label(f"Name: {self.p1.name}",
-                                        x=(self.player1.x + 53), y=(self.player1.y - 42),
+                                        x=(self.player1.x + 53),
+                                        y=(self.player1.y - 42),
                                         anchor_x='center', anchor_y='center',
-                                        font_size=16, bold=True, color=(0, 0, 0, 255))
+                                        font_size=16, bold=True,
+                                        color=(0, 0, 0, 255))
 
         self.p2name = pyglet.text.Label(f"Name: {self.p2.name}",
-                                        x=(self.player2.x + 53), y=(self.player2.y - 42),
+                                        x=(self.player2.x + 53),
+                                        y=(self.player2.y - 42),
                                         anchor_x='center', anchor_y='center',
-                                        font_size=16, bold=True, color=(0, 0, 0, 255))
+                                        font_size=16, bold=True,
+                                        color=(0, 0, 0, 255))
 
-        self.p1HP = pyglet.text.Label(f"HP: {self.p1.hp}", 
-                                      x=(self.player1.x + 37), y=(self.player1.y - 69),
+        self.p1HP = pyglet.text.Label(f"HP: {self.p1.hp}",
+                                      x=(self.player1.x + 37),
+                                      y=(self.player1.y - 69),
                                       anchor_x='center', anchor_y='center',
-                                      font_size=16, bold=True, color=(0, 0, 0, 255))
+                                      font_size=16, bold=True,
+                                      color=(0, 0, 0, 255))
 
         self.p2HP = pyglet.text.Label(f"HP: {self.p2.hp}",
-                                      x=(self.player2.x + 37), y=(self.player2.y - 69),
+                                      x=(self.player2.x + 37),
+                                      y=(self.player2.y - 69),
                                       anchor_x='center', anchor_y='center',
-                                      font_size=16, bold=True, color=(0, 0, 0, 255))
+                                      font_size=16, bold=True,
+                                      color=(0, 0, 0, 255))
 
         self.p1_status = pyglet.text.Label(f"Status: {self.p1.status}",
-                                           x=(self.player1.x + 60), y=(self.player1.y - 95),
-                                           anchor_x='center', anchor_y='center',
-                                           font_size=16, bold=True, color=(0, 0, 0, 255))
+                                           x=(self.player1.x + 60),
+                                           y=(self.player1.y - 95),
+                                           anchor_x='center',
+                                           anchor_y='center',
+                                           font_size=16, bold=True,
+                                           color=(0, 0, 0, 255))
 
         self.p2_status = pyglet.text.Label(f"Status: {self.p2.status}",
-                                           x=(self.player2.x + 60), y=(self.player2.y - 95),
-                                           anchor_x='center', anchor_y='center',
-                                           font_size=16, bold=True, color=(0, 0, 0, 255))
+                                           x=(self.player2.x + 60),
+                                           y=(self.player2.y - 95),
+                                           anchor_x='center',
+                                           anchor_y='center',
+                                           font_size=16, bold=True,
+                                           color=(0, 0, 0, 255))
 
         # Turn texts
         self.turn_text = None
@@ -344,12 +366,14 @@ class Game(Screen):
         self.turn1 = pyglet.text.Label(f"It's {self.p1.name}'s turn!",
                                        x=SCREENW/2, y=570,
                                        anchor_x='center', anchor_y='center',
-                                       font_size=28, bold=True, color=(255, 255, 255, 255))
+                                       font_size=28, bold=True,
+                                       color=(255, 255, 255, 255))
 
         self.turn2 = pyglet.text.Label(f"It's {self.p2.name}'s turn!",
                                        x=SCREENW/2, y=570,
                                        anchor_x='center', anchor_y='center',
-                                       font_size=28, bold=True, color=(255, 255, 255, 255))
+                                       font_size=28, bold=True,
+                                       color=(255, 255, 255, 255))
 
         # Choosing system
         self.choose = randint(0, 1)
@@ -383,7 +407,7 @@ class Game(Screen):
 
             elif self.p1.hp <= 0:
                 self.turn = -1
-        
+
         elif self.choose == 1:
             if self.p2.status == "alive":
                 self.turn = 2
@@ -433,7 +457,7 @@ class Game(Screen):
             self.turn_text = self.turn2
             self.bombSpr.x = (self.player2.x + 75)
             self.bombSpr.y = (self.player2.y + 40)
-        
+
         elif self.turn == 0:
             self.player_hit = 0
             self.bombSpr.x = -10
@@ -449,7 +473,7 @@ class Game(Screen):
             self.explosion.x = (self.player1.x + 75)
             self.explosion.y = (self.player1.y + 40)
             draw_explosion(1)
-        
+
         elif self.player_hit == 2:
             self.explosion.x = (self.player2.x + 75)
             self.explosion.y = (self.player2.y + 40)
@@ -486,7 +510,7 @@ class Game(Screen):
             self.mouse_overPlayer = 1
             self.bomb_x = self.player1.x
             self.bomb_y = self.player1.y
-        
+
         # Choose player 2
         elif self.p2_hitbox.contain(engine.mouse_x, engine.mouse_y):
             window.set_mouse_cursor(choose_cur)
@@ -518,10 +542,8 @@ class Game(Screen):
             # Remove HP and give next turn
             if self.player_hit == 1:
                 self.p1.hp -= randint(5, 20)
-                #self.player_hit = 0
                 self.choose = randint(0, 1)
                 self.select_player()
-            
 
         # Bomb hits player 2
         if self.p2_hitbox.contain(self.bombSpr.x, self.bombSpr.y) \
@@ -531,37 +553,46 @@ class Game(Screen):
             self.pause_explosion()
             self.play_explosion()
             clock.schedule_once(stop_explosion, 1)
-            
+
             # Remove HP and give next turn
             if self.player_hit == 2:
                 print(self.p2.hp)
                 self.p2.hp -= randint(5, 20)
-                #self.player_hit = 0
                 self.choose = randint(0, 1)
                 self.select_player()
 
         self.set_stats_text()
 
     def set_stats_text(self):
-        self.p1HP = pyglet.text.Label(f"HP: {self.p1.hp}", 
-                                      x=(self.player1.x + 37), y=(self.player1.y - 69),
+        self.p1HP = pyglet.text.Label(f"HP: {self.p1.hp}",
+                                      x=(self.player1.x + 37),
+                                      y=(self.player1.y - 69),
                                       anchor_x='center', anchor_y='center',
-                                      font_size=16, bold=True, color=(0, 0, 0, 255))
+                                      font_size=16, bold=True,
+                                      color=(0, 0, 0, 255))
 
         self.p2HP = pyglet.text.Label(f"HP: {self.p2.hp}",
-                                      x=(self.player2.x + 37), y=(self.player2.y - 69),
+                                      x=(self.player2.x + 37),
+                                      y=(self.player2.y - 69),
                                       anchor_x='center', anchor_y='center',
-                                      font_size=16, bold=True, color=(0, 0, 0, 255))
+                                      font_size=16, bold=True,
+                                      color=(0, 0, 0, 255))
 
         self.p1_status = pyglet.text.Label(f"Status: {self.p1.status}",
-                                           x=(self.player1.x + 60), y=(self.player1.y - 95),
-                                           anchor_x='center', anchor_y='center',
-                                           font_size=16, bold=True, color=(0, 0, 0, 255))
+                                           x=(self.player1.x + 60),
+                                           y=(self.player1.y - 95),
+                                           anchor_x='center',
+                                           anchor_y='center',
+                                           font_size=16, bold=True,
+                                           color=(0, 0, 0, 255))
 
         self.p2_status = pyglet.text.Label(f"Status: {self.p2.status}",
-                                           x=(self.player2.x + 60), y=(self.player2.y - 95),
-                                           anchor_x='center', anchor_y='center',
-                                           font_size=16, bold=True, color=(0, 0, 0, 255))
+                                           x=(self.player2.x + 60),
+                                           y=(self.player2.y - 95),
+                                           anchor_x='center',
+                                           anchor_y='center',
+                                           font_size=16, bold=True,
+                                           color=(0, 0, 0, 255))
 
         # Check HP and status
         if self.p1.hp <= 0:
@@ -586,8 +617,10 @@ class WinnerScreen(Screen):
         self.leave = Region(0, 0, SCREENW, SCREENH)
         self.victory_player.play()
 
-        self.winner_text = pyglet.text.Label(f"Congratulations, {self.winner}! You have won!",
-                                             x=400, y=300, anchor_x='center', anchor_y='center',
+        self.winner_text = pyglet.text.Label(f"""Congratulations, {self.winner}!
+You have won!""",
+                                             x=400, y=300, anchor_x='center',
+                                             anchor_y='center',
                                              font_size=24, bold=True)
 
     def draw(self):
@@ -599,7 +632,6 @@ class WinnerScreen(Screen):
         if self.leave.contain(x, y):
             engine.setCurrentScreen(main_menu)
             game.restart()
-
 
     def update(self, dt):
         pass
@@ -655,7 +687,6 @@ class Region(object):
     def draw(self):
         r = Rect(self.x, self.y, self.width, self.height)
         r.draw()
-
 
 
 # Class instances
